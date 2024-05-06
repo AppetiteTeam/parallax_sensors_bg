@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+
 import 'parallax_sensors.dart';
+
 export 'parallax_sensors.dart';
 
 class Layer {
@@ -85,39 +88,15 @@ class Layer {
 
   /// Function to build the layer.
   /// Set to private to prevent its access from outside this library.
-  Widget _build(context, int animationDuration, double maxSensitivity,
-          double top, double bottom, double right, double left) =>
-      AnimatedPositioned(
+  Widget _build(context, int animationDuration, double maxSensitivity, double top, double bottom, double right, double left) => AnimatedPositioned(
         duration: Duration(milliseconds: animationDuration),
-        top: (preventCrop
-                ? (top - maxSensitivity) * sensitivity
-                : (top) * sensitivity +
-                    (MediaQuery.of(context).size.height -
-                            (imageHeight ??
-                                MediaQuery.of(context).size.height)) /
-                        2) +
+        top: (preventCrop ? (top - maxSensitivity) * sensitivity : (top) * sensitivity + (MediaQuery.of(context).size.height - (imageHeight ?? MediaQuery.of(context).size.height)) / 2) +
             ((offset?.dy ?? 0) / 2),
-        bottom: (preventCrop
-                ? (bottom - maxSensitivity) * sensitivity
-                : (bottom) * sensitivity +
-                    (MediaQuery.of(context).size.height -
-                            (imageHeight ??
-                                MediaQuery.of(context).size.height)) /
-                        2) -
+        bottom: (preventCrop ? (bottom - maxSensitivity) * sensitivity : (bottom) * sensitivity + (MediaQuery.of(context).size.height - (imageHeight ?? MediaQuery.of(context).size.height)) / 2) -
             ((offset?.dy ?? 0) / 2),
-        right: (preventCrop
-                ? (right - maxSensitivity) * sensitivity
-                : (right) * sensitivity +
-                    (MediaQuery.of(context).size.width -
-                            (imageWidth ?? MediaQuery.of(context).size.width)) /
-                        2) -
+        right: (preventCrop ? (right - maxSensitivity) * sensitivity : (right) * sensitivity + (MediaQuery.of(context).size.width - (imageWidth ?? MediaQuery.of(context).size.width)) / 2) -
             ((offset?.dx ?? 0) / 2),
-        left: (preventCrop
-                ? (left - maxSensitivity) * sensitivity
-                : (left) * sensitivity +
-                    (MediaQuery.of(context).size.width -
-                            (imageWidth ?? MediaQuery.of(context).size.width)) /
-                        2) +
+        left: (preventCrop ? (left - maxSensitivity) * sensitivity : (left) * sensitivity + (MediaQuery.of(context).size.width - (imageWidth ?? MediaQuery.of(context).size.width)) / 2) +
             ((offset?.dx ?? 0) / 2),
         child: Opacity(
           opacity: opacity ?? 1,
@@ -136,15 +115,11 @@ class Layer {
               children: [
                 ClipRect(
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(
-                        sigmaX: imageBlurValue ?? 0,
-                        sigmaY: imageBlurValue ?? 0),
+                    filter: ImageFilter.blur(sigmaX: imageBlurValue ?? 0, sigmaY: imageBlurValue ?? 0),
                     child: Container(
                       height: imageHeight,
                       width: imageWidth,
-                      decoration: BoxDecoration(
-                          color:
-                              Colors.black.withOpacity(imageDarkenValue ?? 0)),
+                      decoration: BoxDecoration(color: Colors.black.withOpacity(imageDarkenValue ?? 0)),
                     ),
                   ),
                 ),
@@ -162,7 +137,7 @@ class Parallax extends StatefulWidget {
   /// The type of sensor to detect the motion can be given through **[sensor]**.
   /// The fixed body of the page can be given through **[child]**.
   const Parallax({
-    Key? key,
+    super.key,
     this.sensor = ParallaxSensor.accelerometer,
     required this.layers,
     this.reverseVerticalAxis = false,
@@ -171,7 +146,7 @@ class Parallax extends StatefulWidget {
     this.lockHorizontalAxis = false,
     this.animationDuration = 300,
     this.child,
-  }) : super(key: key);
+  });
 
   /// Type of the sensor whose detected values will be used for parallax movement
   ///
@@ -251,8 +226,7 @@ class _ParallaxState extends State<Parallax> {
   void initState() {
     switch (widget.sensor) {
       case ParallaxSensor.accelerometer:
-        _accelerometerSensorEvent =
-            accelerometerEvents.listen((AccelerometerEvent event) {
+        _accelerometerSensorEvent = accelerometerEvents.listen((AccelerometerEvent event) {
           setState(() {
             _maxSensitivity = 10;
             _top = widget.lockVerticalAxis
@@ -280,8 +254,7 @@ class _ParallaxState extends State<Parallax> {
         break;
 
       case ParallaxSensor.userAccelerometer:
-        _userAccelerometerSensorEvent =
-            userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+        _userAccelerometerSensorEvent = userAccelerometerEvents.listen((UserAccelerometerEvent event) {
           setState(() {
             _maxSensitivity = 10;
             _top = widget.lockVerticalAxis
@@ -337,8 +310,7 @@ class _ParallaxState extends State<Parallax> {
         break;
 
       case ParallaxSensor.magnetometer:
-        _magnetometerSensorEvent =
-            magnetometerEvents.listen((MagnetometerEvent event) {
+        _magnetometerSensorEvent = magnetometerEvents.listen((MagnetometerEvent event) {
           setState(() {
             _maxSensitivity = 50;
             _top = widget.lockVerticalAxis
@@ -382,10 +354,7 @@ class _ParallaxState extends State<Parallax> {
     return Stack(
       children: [
         Stack(
-          children: widget.layers
-              .map((layer) => layer._build(context, widget.animationDuration,
-                  _maxSensitivity, _top, _bottom, _right, _left))
-              .toList(),
+          children: widget.layers.map((layer) => layer._build(context, widget.animationDuration, _maxSensitivity, _top, _bottom, _right, _left)).toList(),
         ),
         widget.child ?? Container(),
       ],
